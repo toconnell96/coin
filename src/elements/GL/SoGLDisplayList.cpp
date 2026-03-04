@@ -106,9 +106,17 @@ SoGLDisplayList::SoGLDisplayList(SoState * state, Type type, int allocnum,
 
   // Intel Xe graphics may not have a valid gl context
   if(!versionstr)
-    return;
+  {
+    SoDebugError::postWarning("SoGLDisplayList",
+                              "No valid OpenGL context. "
+                              "Display list creation skipped.");
 
-  if (strcmp(versionstr, "1.3.1 NVIDIA 28.02") == 0) {
+    PRIVATE(this)->firstindex = 0;
+    PRIVATE(this)->type = DISPLAY_LIST;
+    return;
+  }
+
+  if (!strcmp(versionstr, "1.3.1 NVIDIA 28.02") == 0) {
     // (From NVidia's changelog, it looks like the problem we've been
     // seeing with the 28.02 driver and displaylists *might* have been
     // fixed for the next version (28.80)).
